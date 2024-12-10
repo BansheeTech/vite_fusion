@@ -22,6 +22,8 @@ This module provides functions to register and serve Vite generated assets in Fl
 
 ## Installation
 
+On your Python interpreter `pip install vite-fusion` then:
+
 1. Install the required dependencies for Flask and Vite.
 2. Copy the `register_vite_assets` function into your project.
 

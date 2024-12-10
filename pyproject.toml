@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vite_fusion"
-version = "0.0.1"
+version = "0.0.2"
 description = "Easily integrate Python, Flask and Vite"
 readme = "README.md"
 license = { text = "MIT" }
