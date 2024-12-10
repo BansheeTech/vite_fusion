@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vite_fusion"
+version = "0.0.1"
+description = "Easily integrate Python, Flask and Vite"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Claudio Gonzalez", email = "claudio@banshee.pro" }]
+dependencies = ["Flask"]
+
+[project.urls]
+"Homepage" = "https://www.banshee.pro/"
+"Source" = "https://github.com/BansheeTech/Vite-Fusion"
