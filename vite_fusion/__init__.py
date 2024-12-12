@@ -1,3 +1,6 @@
+import os
+import json
+
 """
 vite_fusion
 Source by Claudio González
@@ -28,7 +31,7 @@ Parameters:
 
     logger (logging.Logger|None):
             Optional logger. If None, no warnings or errors are logged.
-    
+
 How to Use:
     1. Install the package in your environment.
     2. In your Flask application code, import and call `register_vite_assets` after initializing your `app`.
@@ -46,9 +49,6 @@ Registering Vite assets:
 
 """
 
-import os
-import json
-
 
 def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:5173", manifest_path="src/dist/.vite/manifest.json", nonce_provider=None, logger=None):
 
@@ -63,13 +63,27 @@ def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:51
 
     @app.context_processor
     def inject_vite_assets():
-        def vitecss():
-            if dev_mode:
-                return f'<link rel="stylesheet" href="{dev_server_url}/assets/style.css" />'
-            else:
+        def vitecss(entry=None):
+            try:
+                nonce_value = nonce_provider() if nonce_provider else None
+                nonce_attr = f' nonce="{nonce_value}"' if nonce_value else ""
+
                 manifest = load_manifest()
-                css_links = [f'<link rel="stylesheet" href="/src/dist/assets/{value["file"]}" />' for key, value in manifest.items() if key.endswith(".css")]
-                return "\n".join(css_links)
+                if dev_mode:
+                    matched_entry = next((value for key, value in manifest.items() if key.endswith(f"{entry}.css")), None)
+                    if matched_entry:
+                        return f'<link rel="stylesheet" href="{dev_server_url}/{matched_entry["file"]}"{nonce_attr} />'
+                    else:
+                        if logger:
+                            logger.warning(f"No CSS entry found for '{entry}' in dev manifest.")
+                        return ""
+                else:
+                    css_links = [f'<link rel="stylesheet" href="/src/dist/{value["file"]}"{nonce_attr} />' for key, value in manifest.items() if key.endswith(f"{entry}.css")]
+                    return "\n".join(css_links)
+            except Exception as e:
+                if logger:
+                    logger.exception(f"Error injecting Vite CSS for entry '{entry}': {e}")
+                return ""
 
         def vitejs(entry=None):
             nonce_value = nonce_provider() if nonce_provider else None
