@@ -72,7 +72,7 @@ def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:51
                 if dev_mode:
                     matched_entry = next((value for key, value in manifest.items() if key.endswith(f"{entry}.css")), None)
                     if matched_entry:
-                        return f'<link rel="stylesheet" href="{dev_server_url}/{matched_entry["file"]}"{nonce_attr} />'
+                        return f'<link rel="stylesheet" href="{dev_server_url}/{matched_entry["src"]}"{nonce_attr} />'
                     else:
                         if logger:
                             logger.warning(f"No CSS entry found for '{entry}' in dev manifest.")
@@ -86,13 +86,13 @@ def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:51
                 return ""
 
         def vitejs(entry=None):
-            nonce_value = nonce_provider() if nonce_provider else None
-            nonce_attr = f' nonce="{nonce_value}"' if nonce_value else ""
-
             try:
+                nonce_value = nonce_provider() if nonce_provider else None
+                nonce_attr = f' nonce="{nonce_value}"' if nonce_value else ""
+
+                manifest = load_manifest()
                 if dev_mode:
                     if os.path.exists(manifest_path):
-                        manifest = load_manifest()
                         matched_entry = next((value for key, value in manifest.items() if value.get("name") == entry), None)
                         if matched_entry:
                             return f'<script type="module" src="{dev_server_url}/{matched_entry["src"]}"{nonce_attr} defer></script>'
