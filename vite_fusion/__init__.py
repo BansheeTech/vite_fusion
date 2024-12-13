@@ -105,10 +105,12 @@ def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:51
                             logger.warning("Manifest not found in dev mode, run npm run build first or adjust dev_server_url.")
                         return ""
                 else:
-                    manifest = load_manifest()
                     matched_entry = next((value for key, value in manifest.items() if key.endswith(f"{entry}.js")), None)
                     if matched_entry:
-                        return f'<script type="module" src="/src/dist/{matched_entry["file"]}"{nonce_attr} defer></script>'
+                        css_links = ""
+                        if "css" in matched_entry:
+                            css_links = "\n".join(f'<link rel="stylesheet" href="/src/dist/{css}"{nonce_attr} />' for css in matched_entry["css"])
+                        return f"{css_links}\n<script type=\"module\" src=\"/src/dist/{matched_entry['file']}\"{nonce_attr} defer></script>"
                     else:
                         raise RuntimeError(f"Entry '{entry}' not found in manifest")
             except Exception as e:

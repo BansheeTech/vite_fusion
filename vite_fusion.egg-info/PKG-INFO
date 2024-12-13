@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: vite_fusion
-Version: 0.0.4
+Version: 0.0.5
 Summary: Easily integrate Python, Flask and Vite
 Author-email: Claudio Gonzalez <claudio@banshee.pro>
 License: MIT
