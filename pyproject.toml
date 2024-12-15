@@ -13,4 +13,4 @@ dependencies = ["Flask"]
 
 [project.urls]
 "Homepage" = "https://www.banshee.pro/"
-"Source" = "https://github.com/BansheeTech/Vite-Fusion"
+"Source" = "https://github.com/BansheeTech/vite_fusion"
