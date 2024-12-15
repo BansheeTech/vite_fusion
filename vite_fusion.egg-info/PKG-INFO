@@ -1,11 +1,11 @@
 Metadata-Version: 2.1
 Name: vite_fusion
-Version: 0.0.5
+Version: 0.0.6
 Summary: Easily integrate Python, Flask and Vite
 Author-email: Claudio Gonzalez <claudio@banshee.pro>
 License: MIT
 Project-URL: Homepage, https://www.banshee.pro/
-Project-URL: Source, https://github.com/BansheeTech/Vite-Fusion
+Project-URL: Source, https://github.com/BansheeTech/vite_fusion
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: Flask
