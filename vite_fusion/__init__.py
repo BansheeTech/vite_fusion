@@ -105,14 +105,26 @@ def register_vite_assets(app, dev_mode=True, dev_server_url="http://localhost:51
                             logger.warning("Manifest not found in dev mode, run npm run build first or adjust dev_server_url.")
                         return ""
                 else:
-                    matched_entry = next((value for key, value in manifest.items() if key.endswith(f"{entry}.js")), None)
+
+                    matched_entry = next((value for key, value in manifest.items() if key.endswith(f"{entry}.js") or key.endswith(f"{entry}.ts")), None)
+
                     if matched_entry:
-                        css_links = ""
+                        css_links = set()
+
                         if "css" in matched_entry:
-                            css_links = "\n".join(f'<link rel="stylesheet" href="/src/dist/{css}"{nonce_attr} />' for css in matched_entry["css"])
-                        return f"{css_links}\n<script type=\"module\" src=\"/src/dist/{matched_entry['file']}\"{nonce_attr} defer></script>"
+                            css_links.update(matched_entry["css"])
+
+                        for import_name in matched_entry.get("imports", []):
+                            imported_entry = manifest.get(import_name)
+                            if imported_entry and "css" in imported_entry:
+                                css_links.update(imported_entry["css"])
+
+                        css_links_html = "\n".join(f'<link rel="stylesheet" href="/src/dist/{css}"{nonce_attr} />' for css in css_links)
+
+                        return f"{css_links_html}\n<script type=\"module\" src=\"/src/dist/{matched_entry['file']}\"{nonce_attr} defer></script>"
                     else:
                         raise RuntimeError(f"Entry '{entry}' not found in manifest")
+
             except Exception as e:
                 if logger:
                     logger.exception(f"Error injecting Vite JS for entry '{entry}': {e}")
