@@ -189,3 +189,5 @@ This integration was heavily inspired by **Laravel-Vite-Plugin**. While it may n
 ## Contributing and Support
 
 Feel free to fork this repository and contribute! For any bug fixes, security concerns, or other issues, please email us at [claudio@banshee.pro](mailto:claudio@banshee.pro).
+
+<!-- GitAds-Verify: ZSBMPZUO8HSYE2W68JGPQG5BLYFMPNDX -->
