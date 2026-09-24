@@ -55,7 +55,7 @@ class ManifestCache:
 manifest_cache = ManifestCache()
 
 
-def register_vite_assets(app: Flask, dev_mode: bool = True, dev_server_url: str = "http://localhost:5173", dist_path: str = "/src/dist", manifest_path: str = "src/dist/.vite/manifest.json", nonce_provider: Optional[Callable[[], str]] = None, logger: Optional[Any] = None) -> Flask:
+def register_vite_assets(app: Flask, dev_mode: bool = True, dev_server_url: str = "http://localhost:5173", dist_path: str = "/src/dist", manifest_path: str = "src/dist/.vite/manifest.json", nonce_provider: Optional[Callable[[], str]] = None, logger: Optional[Any] = None, react_refresh: bool = False) -> Flask:
 
     def load_manifest() -> Dict:
         try:
@@ -71,6 +71,19 @@ def register_vite_assets(app: Flask, dev_mode: bool = True, dev_server_url: str 
         def get_nonced_attr() -> str:
             nonce = nonce_provider() if nonce_provider else None
             return f' nonce="{nonce}"' if nonce else ""
+
+        def get_react_refresh_preamble(nonce_attr: str) -> str:
+            return (
+                f'<script type="module"{nonce_attr}>\n'
+                f'  import RefreshRuntime from "{dev_server_url}/@react-refresh"\n'
+                f"  if (!window.__vite_plugin_react_preamble_installed__) {{\n"
+                f"    RefreshRuntime.injectIntoGlobalHook(window)\n"
+                f"    window.$RefreshReg$ = () => {{}}\n"
+                f"    window.$RefreshSig$ = () => (type) => type\n"
+                f"    window.__vite_plugin_react_preamble_installed__ = true\n"
+                f"  }}\n"
+                f"</script>"
+            )
 
         def vitecss(entry: str) -> str:
             try:
@@ -99,7 +112,10 @@ def register_vite_assets(app: Flask, dev_mode: bool = True, dev_server_url: str 
                 if dev_mode:
                     entry_data = next((v for v in manifest.values() if v.get("name") == entry), None)
                     if entry_data:
-                        return f'<script type="module" src="{dev_server_url}/{entry_data["src"]}"{nonce_attr} defer></script>'
+                        entry_tag = f'<script type="module" src="{dev_server_url}/{entry_data["src"]}"{nonce_attr} defer></script>'
+                        if react_refresh:
+                            return f"{get_react_refresh_preamble(nonce_attr)}\n{entry_tag}"
+                        return entry_tag
                 else:
                     entry_data = next((v for k, v in manifest.items() if k.endswith(f"{entry}.js") or k.endswith(f"{entry}.ts")), None)
                     if entry_data:
